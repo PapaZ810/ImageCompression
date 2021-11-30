@@ -12,7 +12,6 @@ cwd = os.getcwd()
 arr = io.imread(cwd + "\\" + file)
 dim1 = len(arr)
 dim2 = len(arr[0])
-dim3 = len(arr[0][0])
 fourier = []
 for i in range(8):
     for j in range(8):
@@ -20,9 +19,16 @@ for i in range(8):
 
 print(dim2)
 
-luminance = [ [None for y in range(dim2)] for x in range(dim1)]
-for i in range(dim2-1):
-    for j in range(dim1-1):
-            luminance[i][j] = arr[i][j][0]
+def extractor(dim1, dim2, array, vecnum):
+    result = np.empty(dim1*dim2).reshape(dim1, dim2)
+    for i in range(dim2):
+        for j in range(dim1):
+            result[j][i] = array[j][i][vecnum]
 
-print(luminance)
+    return result
+
+red = extractor(dim1, dim2, arr, 0)
+green = extractor(dim1, dim2, arr, 1)
+blue = extractor(dim1, dim2, arr, 2)
+
+print(red), print(green), print(blue), print(arr[dim1-2][dim2-2])
