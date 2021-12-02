@@ -31,15 +31,19 @@ luminance = extractor(dim1, dim2, arr, 0)
 Cr = extractor(dim1, dim2, arr, 1)
 Cb = extractor(dim1, dim2, arr, 2)
 
-print(luminance), print(Cr), print(Cb)
+#print(luminance), print(Cr), print(Cb)
 
 fourierinv = np.linalg.inv(fourier)
 
 def fourierconversion(finv, array):
     count = 0
-    for i in range(len(array) % 8)
-        for j in range(len(array[0] % 8))
-            result = finv * array[count:j % 8 * 8][count:i % 8 * 8]
-            count++
+    result = np.array
+    for i in range(int(len(array) / 8)):
+        print("i")
+        for j in range(int(len(array[0]) / 8)):
+            print("j")
+            result = finv * array[count:int(j / 8 * 8)][count:int(i / 8 * 8)]
+            count+=8
     return result
 
+print(fourierconversion(fourierinv, luminance))
