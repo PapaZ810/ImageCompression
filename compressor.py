@@ -4,6 +4,7 @@ from PIL import Image
 
 pi = math.pi
 cos = math.cos
+np.set_printoptions(threshold = sys.maxsize, linewidth = 750)
 
 file = sys.argv[len(sys.argv)-1]
 cwd = os.getcwd()
@@ -31,17 +32,13 @@ Cb = extractor(dim1, dim2, arr, 2)
 
 #print(luminance), print(Cr), print(Cb)
 
-fourierinv = np.linalg.inv(fourier)
+fourierinv = np.linalg.inv(fourier.T)
 
 def fourierconversion(finv, array):
-    count = 0
-    result = np.array
-    for i in range(len(array)):
-        for j in range(len(array[0])):
-            print(j)
-            if (count % 8 == 0 and count != 0):
-                result = finv * array[count-8:j][count-8:i]
-            count+=1
+    result = np.empty(dim1*dim2).reshape(dim1, dim2)
+    for i in range(int(len(array) / 8)):
+        for j in range(int(len(array[0]) / 8)):
+            result[j:j+8, i:i+8] = ( finv * array[j:j+8, i:i+8])
     return result
 
 print(fourierconversion(fourierinv, luminance))
