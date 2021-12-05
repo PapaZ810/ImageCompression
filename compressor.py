@@ -10,7 +10,7 @@ file = sys.argv[len(sys.argv)-1]
 if len(sys.argv) < 2:
     quality = 2
 else:
-    quality = (1-(sys.argv[len(sys.argv)-2].parseInt() / 10)) * 10
+    quality = (1-(int(sys.argv[len(sys.argv)-2]) / 10)) * 10
 cwd = os.getcwd()
 arr = Image.open(cwd + "\\" + file).convert('YCbCr')
 arr = np.array(arr)
@@ -45,7 +45,7 @@ def fourierconversion(finv, array):
             result[j:j+8, i:i+8] = ( finv * array[j:j+8, i:i+8])
     return result
 
-print(fourierconversion(fourierinv, luminance))
+print(dim1, dim2)
 
 def clearBadValues(array, quality):
     for i in range(len(array)):
@@ -54,3 +54,12 @@ def clearBadValues(array, quality):
                 array[j][i] = 0
     return array
 
+def fourierConversionInv(f, array):
+    dim1, dim2 = len(array), len(array[0])
+    result = np.empty(dim1*dim2).reshape(dim1, dim2)
+    for i in range(int(dim2 / 8)):
+        for j in range(int(dim1 / 8)):
+            result[j:j+8, i:i+8] = f * array[j:j+8, i:i+8]
+    return result
+
+print(fourierConversionInv(fourier, clearBadValues(fourierconversion(fourierinv, luminance), quality)))
