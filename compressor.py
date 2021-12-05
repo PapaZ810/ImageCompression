@@ -7,6 +7,7 @@ cos = math.cos
 np.set_printoptions(threshold = sys.maxsize, linewidth = 750)
 
 file = sys.argv[len(sys.argv)-1]
+quality = sys.argv[len(sys.argv)-2]
 cwd = os.getcwd()
 arr = Image.open(cwd + "\\" + file).convert('YCbCr')
 arr = np.array(arr)
