@@ -12,54 +12,59 @@ if len(sys.argv) < 2:
 else:
     quality = (1-(int(sys.argv[len(sys.argv)-2]) / 10)) * 10
 cwd = os.getcwd()
-arr = Image.open(cwd + "\\" + file).convert('YCbCr')
-arr = np.array(arr)
+image = Image.open(cwd + "\\" + file).convert('YCbCr')
+arr = np.array(image)
 dim1 = len(arr)
 dim2 = len(arr[0])
 
 fourier = np.empty(64).reshape(8, 8)
 for i in range(8):
     for j in range(8):
-        fourier[j][i] = (cos((2*i+1)*j*pi/16))
+        fourier[i][j] = (cos((2*i+1)*j*pi/16))
 
-def extractor(dim1, dim2, array, vecnum):
-    result = np.empty(dim1*dim2).reshape(dim1, dim2)
-    for i in range(dim2):
-        for j in range(dim1):
-            result[j][i] = array[j][i][vecnum]
-
-    return result
-
-luminance = extractor(dim1, dim2, arr, 0)
-Cr = extractor(dim1, dim2, arr, 1)
-Cb = extractor(dim1, dim2, arr, 2)
-
-#print(luminance), print(Cr), print(Cb)
-
-fourierinv = np.linalg.inv(fourier.T)
-
-def fourierconversion(finv, array):
-    result = np.empty(dim1*dim2).reshape(dim1, dim2)
-    for i in range(int(len(array) / 8)):
-        for j in range(int(len(array[0]) / 8)):
-            result[j:j+8, i:i+8] = ( finv * array[j:j+8, i:i+8])
-    return result
-
-print(dim1, dim2)
-
-def clearBadValues(array, quality):
-    for i in range(len(array)):
-        for j in range(len(array[0])):
-            if array[j][i] < quality:
-                array[j][i] = 0
-    return array
-
-def fourierConversionInv(f, array):
+def extractor(array, vecnum):
     dim1, dim2 = len(array), len(array[0])
     result = np.empty(dim1*dim2).reshape(dim1, dim2)
-    for i in range(int(dim2 / 8)):
-        for j in range(int(dim1 / 8)):
-            result[j:j+8, i:i+8] = f * array[j:j+8, i:i+8]
+    for i in range(dim1):
+        for j in range(dim2):
+            result[i][j] = array[i][j][vecnum]
+
     return result
 
-print(fourierConversionInv(fourier, clearBadValues(fourierconversion(fourierinv, luminance), quality)))
+luminance = extractor(arr, 0)
+Cr = extractor(arr, 1)
+Cb = extractor(arr, 2)
+
+fourierinv = np.linalg.inv(fourier)
+
+def fourierconversion(finv, array):
+    dim1, dim2 = len(array), len(array[0])
+    result = np.empty(dim1*dim2).reshape(dim1, dim2)
+    for i in range(int(len(array) / 8)):
+        for j in range(int(len(array[i]) / 8)):
+            result[i:i+8, j:j+8] = ( finv * array[i:i+8, j:j+8])
+    return array
+
+def clearBadValues(array, quality):
+    dim1, dim2 = len(array), len(array[0])
+    for i in range(dim1):
+        for j in range(dim2):
+            if array[i][j] < quality:
+                array[i][j] = 0
+    return array
+
+resultLum = fourierconversion(fourier, clearBadValues(fourierconversion(fourierinv, luminance), quality))
+resultCr = fourierconversion(fourier, clearBadValues(fourierconversion(fourierinv, Cr), quality))
+resultCb = fourierconversion(fourier, clearBadValues(fourierconversion(fourierinv, Cb), quality))
+
+def integrator(vec1, vec2, vec3):
+    dim1, dim2 = len(vec1), len(vec1[0])
+    result = np.empty(dim1*dim2*3).reshape(dim1, dim2, 3)
+    for i in range(dim1):
+        for j in range(dim2):
+            result[i][j][0], result[i][j][1], result[i][j][2] = vec1[i][j], vec2[i][j], vec3[i][j]
+    return result
+
+resultArr = integrator(resultLum, resultCb, resultCr)
+
+Image.fromarray(resultArr, mode="YCbCr").save(cwd + "\\compressed_" + file)
