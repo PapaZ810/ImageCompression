@@ -7,7 +7,10 @@ cos = math.cos
 np.set_printoptions(threshold = sys.maxsize, linewidth = 750)
 
 file = sys.argv[len(sys.argv)-1]
-quality = sys.argv[len(sys.argv)-2]
+if len(sys.argv) < 2:
+    quality = 2
+else:
+    quality = (1-(sys.argv[len(sys.argv)-2].parseInt() / 10)) * 10
 cwd = os.getcwd()
 arr = Image.open(cwd + "\\" + file).convert('YCbCr')
 arr = np.array(arr)
@@ -43,3 +46,11 @@ def fourierconversion(finv, array):
     return result
 
 print(fourierconversion(fourierinv, luminance))
+
+def clearBadValues(array, quality):
+    for i in range(len(array)):
+        for j in range(len(array[0])):
+            if array[j][i] < quality:
+                array[j][i] = 0
+    return array
+
