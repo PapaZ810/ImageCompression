@@ -4,7 +4,7 @@ from PIL import Image
 
 pi = math.pi
 cos = math.cos
-np.set_printoptions(threshold = sys.maxsize, linewidth = 750)
+np.set_printoptions(threshold = sys.maxsize, linewidth = 1000)
 
 file = sys.argv[len(sys.argv)-1]
 if len(sys.argv) < 2:
@@ -53,18 +53,26 @@ def clearBadValues(array, quality):
                 array[i][j] = 0
     return array
 
-resultLum = fourierconversion(fourier, clearBadValues(fourierconversion(fourierinv, luminance), quality))
-resultCr = fourierconversion(fourier, clearBadValues(fourierconversion(fourierinv, Cr), quality))
-resultCb = fourierconversion(fourier, clearBadValues(fourierconversion(fourierinv, Cb), quality))
+fourLum = fourierconversion(fourierinv, luminance)
+clearedLum = clearBadValues(fourLum, quality)
+resultLum = fourierconversion(fourier, clearedLum)
+
+fourCb = fourierconversion(fourierinv, Cb)
+clearedCb = clearBadValues(fourCb, quality)
+resultCb = fourierconversion(fourier, clearedCb)
+
+fourCr = fourierconversion(fourierinv, Cr)
+clearedCr = clearBadValues(fourCr, quality)
+resultCr = fourierconversion(fourier, clearedCr)
 
 def integrator(vec1, vec2, vec3):
     dim1, dim2 = len(vec1), len(vec1[0])
-    result = np.empty(dim1*dim2*3).reshape(dim1, dim2, 3)
+    result = np.empty(dim1*dim2*3, dtype=np.uint8).reshape(dim1, dim2, 3)
     for i in range(dim1):
         for j in range(dim2):
             result[i][j][0], result[i][j][1], result[i][j][2] = vec1[i][j], vec2[i][j], vec3[i][j]
     return result
 
-resultArr = integrator(resultLum, resultCb, resultCr)
+resultArr = integrator(resultLum, resultCr, resultCb)
 
-Image.fromarray(resultArr, mode="YCbCr").save(cwd + "\\compressed_" + file)
+Image.fromarray(resultArr, "YCbCr").save(cwd + "\\compressed_" + file)
