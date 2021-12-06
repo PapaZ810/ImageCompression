@@ -6,11 +6,14 @@ pi = math.pi
 cos = math.cos
 np.set_printoptions(threshold = sys.maxsize, linewidth = 1000)
 
-file = sys.argv[len(sys.argv)-1]
-if len(sys.argv) < 2:
+file = sys.argv[len(sys.argv)-1].strip()
+if file.__contains__(".\\"):
+    file = file.removeprefix(".\\")
+if len(sys.argv) < 3:
     quality = 2
 else:
     quality = (1-(int(sys.argv[len(sys.argv)-2]) / 10)) * 10
+
 cwd = os.getcwd()
 image = Image.open(cwd + "\\" + file).convert('YCbCr')
 arr = np.array(image)
