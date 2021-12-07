@@ -35,8 +35,8 @@ def extractor(array, vecnum):
     return result
 
 luminance = extractor(arr, 0)
-Cr = extractor(arr, 1)
-Cb = extractor(arr, 2)
+Cb = extractor(arr, 1)
+Cr = extractor(arr, 2)
 
 fourierinv = np.linalg.inv(fourier)
 
@@ -76,6 +76,6 @@ def integrator(vec1, vec2, vec3):
             result[i][j][0], result[i][j][1], result[i][j][2] = vec1[i][j], vec2[i][j], vec3[i][j]
     return result
 
-resultArr = integrator(resultLum, resultCr, resultCb)
+resultArr = integrator(resultLum, resultCb, resultCr)
 
 Image.fromarray(resultArr, "YCbCr").save(cwd + "\\compressed_" + file)
