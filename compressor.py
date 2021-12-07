@@ -1,6 +1,9 @@
 import numpy as np
 import os, sys, math
 from PIL import Image
+import timeit
+
+start = timeit.default_timer()
 
 pi = math.pi
 cos = math.cos
@@ -79,3 +82,6 @@ def integrator(vec1, vec2, vec3):
 resultArr = integrator(resultLum, resultCb, resultCr)
 
 Image.fromarray(resultArr, "YCbCr").save(cwd + "\\compressed_" + file)
+
+stop = timeit.default_timer()
+print('Time: ', stop-start)
