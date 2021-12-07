@@ -1,6 +1,7 @@
 import numpy as np
 import os, sys, math
 from PIL import Image
+import threading
 
 pi = math.pi
 cos = math.cos
@@ -31,10 +32,9 @@ def extractor(array, vecnum):
     for i in range(dim1):
         for j in range(dim2):
             result[i][j] = array[i][j][vecnum]
-
     return result
 
-luminance = extractor(arr, 0)
+t1 = threading.Thread(target = extractor, args=(arr, 0))
 Cr = extractor(arr, 1)
 Cb = extractor(arr, 2)
 
