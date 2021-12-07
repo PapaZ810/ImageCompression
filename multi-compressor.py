@@ -2,6 +2,9 @@ import numpy as np
 import os, sys, math
 from PIL import Image
 import threading
+import timeit
+
+start = timeit.default_timer()
 
 pi = math.pi
 cos = math.cos
@@ -26,17 +29,22 @@ for i in range(8):
     for j in range(8):
         fourier[i][j] = (cos((2*i+1)*j*pi/16))
 
-def extractor(array, vecnum):
+resultList = [np.unsignedinteger] * 3
+
+def extractor(array, vecnum, list):
     dim1, dim2 = len(array), len(array[0])
     result = np.empty(dim1*dim2).reshape(dim1, dim2)
     for i in range(dim1):
         for j in range(dim2):
             result[i][j] = array[i][j][vecnum]
-    return result
+    list[vecnum] = result
 
-t1 = threading.Thread(target = extractor, args=(arr, 0))
-Cr = extractor(arr, 1)
-Cb = extractor(arr, 2)
+t1 = threading.Thread(target = extractor, args=(arr, 0, resultList))
+t2 = threading.Thread(target = extractor, args=(arr, 1, resultList))
+t3 = threading.Thread(target = extractor, args=(arr, 2, resultList))
+
+t1.start(), t2.start(), t3.start()
+t1.join(), t2.join(), t3.join()
 
 fourierinv = np.linalg.inv(fourier)
 
@@ -56,15 +64,15 @@ def clearBadValues(array, quality):
                 array[i][j] = 0
     return array
 
-fourLum = fourierconversion(fourierinv, luminance)
+fourLum = fourierconversion(fourierinv, resultList[0])
 clearedLum = clearBadValues(fourLum, quality)
 resultLum = fourierconversion(fourier, clearedLum)
 
-fourCb = fourierconversion(fourierinv, Cb)
+fourCb = fourierconversion(fourierinv, resultList[1])
 clearedCb = clearBadValues(fourCb, quality)
 resultCb = fourierconversion(fourier, clearedCb)
 
-fourCr = fourierconversion(fourierinv, Cr)
+fourCr = fourierconversion(fourierinv, resultList[2])
 clearedCr = clearBadValues(fourCr, quality)
 resultCr = fourierconversion(fourier, clearedCr)
 
@@ -76,6 +84,9 @@ def integrator(vec1, vec2, vec3):
             result[i][j][0], result[i][j][1], result[i][j][2] = vec1[i][j], vec2[i][j], vec3[i][j]
     return result
 
-resultArr = integrator(resultLum, resultCr, resultCb)
+resultArr = integrator(resultLum, resultCb, resultCr)
 
 Image.fromarray(resultArr, "YCbCr").save(cwd + "\\compressed_" + file)
+
+stop = timeit.default_timer()
+print('Time: ', stop - start)
