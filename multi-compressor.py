@@ -84,9 +84,5 @@ def integrator(vec1, vec2, vec3):
             result[i][j][0], result[i][j][1], result[i][j][2] = vec1[i][j], vec2[i][j], vec3[i][j]
     return result
 
-resultArr = integrator(resultLum, resultCb, resultCr)
-
-Image.fromarray(resultArr, "YCbCr").save(cwd + "\\compressed_" + file)
-
 stop = timeit.default_timer()
 print('Time: ', stop - start)
