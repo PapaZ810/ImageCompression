@@ -94,9 +94,9 @@ t1.start(), t2.start(), t3.start(), t4.start()
 t1.join(), t2.join(), t3.join(), t4.join()
 
 
-top = np.concatenate((topLeft, bottomLeft), axis=1)
-bottom = np.concatenate((topRight, bottomRight), axis=1)
-resultArr = np.concatenate((top, bottom), axis=0)
+left = np.concatenate((topLeft, bottomLeft), axis=1)
+right = np.concatenate((topRight, bottomRight), axis=1)
+resultArr = np.concatenate((left, right), axis=0)
 
 
 Image.fromarray(resultArr, "YCbCr").save("compressed_" + file)
