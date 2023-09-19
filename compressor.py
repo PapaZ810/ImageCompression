@@ -42,7 +42,7 @@ def fourierConversion(finv, array):
     for i in range(int(len(array) / 8)):
         for j in range(int(len(array[i]) / 8)):
             result[i:i+8, j:j+8] = (finv * array[i:i+8, j:j+8])
-    return result
+    return array
 
 
 def clearBadValues(array, quality):
