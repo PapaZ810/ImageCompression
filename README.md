@@ -1,0 +1,9 @@
+# ImageCompression
+JPG image compression script that works through the command line.
+
+
+# Multithreading
+After building the single-threaded version of this project for a Linear Algebra class in December of 2021, I wanted to make it faster on really large pictures. I figured that the best way to do that would be to multithread it. The process of multiplying and such requires a lot of computational power and I thought it would transfer very well to multithreading. My first thought on what to multithread was the array manipulations. These are working over thousands of pixels at a time and they are very sequential, requiring an operation to finish before the next process can begin. So, parallelizing that process made the most sense to start with. At first I had a lot of problems with my existing code, a lot of nested for loops and useless error checking, and that caused me to give up after I couldn't figure out how to get python's Threading class to return an array from a finished thread. I still wanted to work on it but was losing motivation so I left it for the future.
+
+After a full year of Computer Science classes later, I decided to go back into it with some new ideas. First, I would use global variables to get around the fact that threads couldn't return things and I would completely rewrite the script with built in numpy methods and array slicing to make the code cleaner and(hopefully) faster. 
+At the end of it I did get a working program with multithreading, but unfotunately it was only 83% of the speed of single threaded script(Single threaded would take 70 seconds and the multithreaded one would take 83-90 seconds). I am not sure if that was due to the numpy methods or a poor implementation of the threading, but the only way to know that is to refactor the single threaded algorithm...
