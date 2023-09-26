@@ -48,11 +48,7 @@ def fourierconversion(finv, array):
 
 
 def clearBadValues(array, quality):
-    dim1, dim2 = len(array), len(array[0])
-    for i in range(dim1):
-        for j in range(dim2):
-            if array[i][j] < quality:
-                array[i][j] = 0
+    array[array < quality] = 0
     return array
 
 
