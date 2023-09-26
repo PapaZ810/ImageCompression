@@ -7,7 +7,7 @@ import numpy as np
 
 start = timeit.default_timer()
 PI = math.pi
-COS = math.cos
+COS = np.cos
 np.set_printoptions(threshold=sys.maxsize, linewidth=1000)
 
 file = sys.argv[-1].strip()
@@ -50,11 +50,7 @@ def fourierConversion(finv, array):
 
 
 def clearBadValues(array, quality):
-    dim1, dim2 = len(array), len(array[0])
-    for i in range(dim1):
-        for j in range(dim2):
-            if array[i][j] < quality:
-                array[i][j] = 0
+    array[array < quality] = 0
     return array
 
 
