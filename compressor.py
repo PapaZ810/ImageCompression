@@ -23,10 +23,8 @@ for i in range(8):
 
 fourierinv = np.linalg.inv(fourier)
 
-global topLeft
-global topRight
-global bottomLeft
-global bottomRight
+global left
+global right
 
 fourier = np.empty(64).reshape(8, 8)
 for i in range(8):
@@ -54,10 +52,8 @@ def clearBadValues(array, quality):
     return array
 
 
-topLeft = arr[:int(x/2), :int(y/2)]
-topRight = arr[int(x/2):x, :int(y/2)]
-bottomLeft = arr[:int(x/2), int(y/2):]
-bottomRight = arr[int(x/2):, int(y/2):]
+left = arr[:int(x/2), ]
+right = arr[int(x/2):, ]
 
 
 def compression(array: np.array):
@@ -69,35 +65,23 @@ def compression(array: np.array):
     Cb = fourierConversion(fourier, clearBadValues(fourierConversion(fourierInv, Cb), 2))
     Cr = fourierConversion(fourier, clearBadValues(fourierConversion(fourierInv, Cr), 2))
 
-    global topLeft
-    global topRight
-    global bottomLeft
-    global bottomRight
+    global left
+    global right
 
-    if threading.current_thread().name == "tl":
-        topLeft = np.dstack((luminance, Cb, Cr))
-    elif threading.current_thread().name == "tr":
-        topRight = np.dstack((luminance, Cb, Cr))
-    elif threading.current_thread().name == "bl":
-        bottomLeft = np.dstack((luminance, Cb, Cr))
+    if threading.current_thread().name == "le":
+        left = np.dstack((luminance, Cb, Cr))
     else:
-        bottomRight = np.dstack((luminance, Cb, Cr))
+        right = np.dstack((luminance, Cb, Cr))
 
 
-t1 = threading.Thread(target=compression, args=(topLeft,), name="tl")
-t2 = threading.Thread(target=compression, args=(topRight,), name="tr")
-t3 = threading.Thread(target=compression, args=(bottomLeft,), name="bl")
-t4 = threading.Thread(target=compression, args=(bottomRight,), name="br")
+t1 = threading.Thread(target=compression, args=(left,), name="le")
+t2 = threading.Thread(target=compression, args=(right,), name="ri")
 
-t1.start(), t2.start(), t3.start(), t4.start()
+t1.start(), t2.start()
 
-t1.join(), t2.join(), t3.join(), t4.join()
+t1.join(), t2.join()
 
-
-left = np.concatenate((topLeft, bottomLeft), axis=1)
-right = np.concatenate((topRight, bottomRight), axis=1)
 resultArr = np.concatenate((left, right), axis=0)
-
 
 Image.fromarray(resultArr, "YCbCr").save("compressed_" + file)
 
