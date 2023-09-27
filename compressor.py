@@ -38,19 +38,15 @@ fourierInv = np.linalg.inv(fourier)
 
 def fourierConversion(finv, array):
     dim1, dim2 = len(array), len(array[0])
-    result = np.empty(dim1*dim2).reshape(dim1, dim2)
-    for i in range(int(len(array) / 8)):
-        for j in range(int(len(array[i]) / 8)):
+    result = np.zeros_like(array)
+    for i in range(int(dim1 / 8)):
+        for j in range(int(dim2 / 8)):
             result[i:i+8, j:j+8] = (finv * array[i:i+8, j:j+8])
     return array
 
 
 def clearBadValues(array, quality):
-    dim1, dim2 = len(array), len(array[0])
-    for i in range(dim1):
-        for j in range(dim2):
-            if array[i][j] < quality:
-                array[i][j] = 0
+    array[array < quality] = 0
     return array
 
 
